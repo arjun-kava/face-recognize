@@ -1,35 +1,16 @@
-import cv2
 from libface_recogniser_cnn import *
 
-feed_path = "../assets/videos/The Greatest Showman.mp4"
+# initialize properties
+data_set_path = "../assets/face_dataset"
+encoding_path = "face_encodings.pkl"
+output_path = "../assets/videos/Inception - Official Trailer [HD] Output.avi"
+feed_path = "../assets/videos/Inception - Official Trailer [HD].mp4"
 
-# get reference of feed
-video_capture = cv2.VideoCapture(feed_path)
-video_capture.set(cv2.CAP_PROP_FPS, 50)
+# init recogniser
+recogniser = FaceRecogniser(data_set_path, encoding_path, output_path, "cnn")
 
-# initialize face recognizer with
-recognizer = FaceRecogniserCNN(known_face_dir="../assets/single_image_face_dataset")
+# encode face data set
+recogniser.encode()
 
-# load images from known face directory
-recognizer.load_know_faces()
-
-while True:
-    # Grab a single frame of video
-    ret, frame = video_capture.read()
-
-    # extract faces from frame
-    face_locations, face_names = recognizer.recognize(frame, model="hog")
-
-    # draw rectangle on found faces
-    recognizer.draw_rect(frame, face_locations, face_names)
-
-    # Display the resulting image
-    cv2.imshow('Video', frame)
-
-    # Hit 'q' on the keyboard to quit!
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-# Release handle to the webcam
-video_capture.release()
-cv2.destroyAllWindows()
+# detect and recognise faces
+recogniser.feed(feed_path, is_display=True)
